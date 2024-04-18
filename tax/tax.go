@@ -22,5 +22,5 @@ func (t TaxCalculator) calculate(totalIncome float64) float64 {
 		return (income-1_000_000)*0.2 + 110_000
 	}
 
-	return 0
+	return (income-2_000_000)*0.35 + 310000
 }
