@@ -17,7 +17,9 @@ func (t TaxCalculator) calculate(totalIncome float64) float64 {
 	} else if income <= 500_000 {
 		return (income - 150_000) * 0.1
 	} else if income <= 1_000_000 {
-		return (income-500_000)*0.15 + 35000
+		return (income-500_000)*0.15 + 35_000
+	} else if income <= 2_000_000 {
+		return (income-1_000_000)*0.2 + 110_000
 	}
 
 	return 0

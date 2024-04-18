@@ -66,6 +66,14 @@ func TestTaxCalculation(t *testing.T) {
 			income:      1_060_000,
 			expectedTax: 110_000,
 		},
+		{
+			income:      1_060_001,
+			expectedTax: 110_000.2,
+		},
+		{
+			income:      2_060_000,
+			expectedTax: 310_000,
+		},
 	}
 
 	for _, tc := range testCases {
