@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/bytesbanana/assessment-tax/tax"
@@ -19,7 +20,7 @@ func main() {
 
 	taxHandler := tax.NewHandler()
 	e.POST("/tax/calculations", taxHandler.CalculateTax)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	go func() {
