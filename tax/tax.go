@@ -16,6 +16,8 @@ func (t Tax) calculate(totalIncome float64) float64 {
 
 	if incomeAfterPersonalTaxDeduction <= 150_000 {
 		tax = 0
+	} else if incomeAfterPersonalTaxDeduction <= 500_000 {
+		tax = (incomeAfterPersonalTaxDeduction - 150_000) * 0.1
 	}
 
 	return tax
