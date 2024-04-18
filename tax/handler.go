@@ -21,7 +21,7 @@ type (
 	}
 
 	Handler struct {
-		tax Tax
+		taxCalculator TaxCalculator
 	}
 
 	Err struct {
@@ -31,7 +31,7 @@ type (
 
 func NewHandler() *Handler {
 	return &Handler{
-		tax: New(),
+		taxCalculator: New(),
 	}
 }
 
@@ -45,7 +45,7 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		})
 	}
 
-	tax := h.tax.calculate(req.TotalIncome)
+	tax := h.taxCalculator.calculate(req.TotalIncome)
 
 	return c.JSON(http.StatusOK, taxCalculationResponse{Tax: tax})
 }

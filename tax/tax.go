@@ -2,14 +2,14 @@ package tax
 
 const PERSONAL_TAX_DEDUCTION = 60_000
 
-type Tax struct {
+type TaxCalculator struct {
 }
 
-func New() Tax {
-	return Tax{}
+func New() TaxCalculator {
+	return TaxCalculator{}
 }
 
-func (t Tax) calculate(totalIncome float64) float64 {
+func (t TaxCalculator) calculate(totalIncome float64) float64 {
 	incomeAfterPersonalTaxDeduction := totalIncome - PERSONAL_TAX_DEDUCTION
 
 	tax := 0.0
