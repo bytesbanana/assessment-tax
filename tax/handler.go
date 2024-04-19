@@ -26,8 +26,14 @@ type (
 		Allowances  []Allowance `json:"allowances"`
 	}
 
-	taxCalculationResponse struct {
-		Tax float64 `json:"tax"`
+	TaxLevel struct {
+		Level string  `json:"level"`
+		Tax   float64 `json:"tax"`
+	}
+
+	TaxCalculationResponse struct {
+		Tax      float64    `json:"tax"`
+		TaxLevel []TaxLevel `json:"taxLevel"`
 	}
 
 	Handler struct {
@@ -74,5 +80,5 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 	tax := h.taxCalculator.calculate(req)
 	roundedTax := math.Round(tax*100) / 100
 
-	return c.JSON(http.StatusOK, taxCalculationResponse{Tax: roundedTax})
+	return c.JSON(http.StatusOK, TaxCalculationResponse{Tax: roundedTax})
 }

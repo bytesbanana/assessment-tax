@@ -12,10 +12,11 @@ import (
 )
 
 type TestCase struct {
-	income      float64
-	wht         float64
-	allowances  []Allowance
-	expectedTax float64
+	income           float64
+	wht              float64
+	allowances       []Allowance
+	expectedTax      float64
+	expectedTaxLevel []TaxLevel
 }
 
 func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *httptest.ResponseRecorder) {
@@ -138,7 +139,7 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 						rec.Code, http.StatusOK)
 				}
 
-				res := &taxCalculationResponse{}
+				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
 				if res.Tax != tc.expectedTax {
@@ -222,7 +223,7 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 						rec.Code, http.StatusOK)
 				}
 
-				res := &taxCalculationResponse{}
+				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
 				if res.Tax != tc.expectedTax {
@@ -435,7 +436,7 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 						rec.Code, http.StatusOK)
 				}
 
-				res := &taxCalculationResponse{}
+				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
 				if res.Tax != tc.expectedTax {
