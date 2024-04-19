@@ -30,7 +30,7 @@ func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *
 	return c, rec
 }
 
-func TestTaxCalculation(t *testing.T) {
+func TestRequestValidtion(t *testing.T) {
 
 	t.Run("given invalid request should return 400", func(t *testing.T) {
 		c, rec := setup(t, func() *http.Request {
@@ -73,13 +73,9 @@ func TestTaxCalculation(t *testing.T) {
 		}
 	})
 
-	testTotalIncomeOnly(t)
-	testTotalIncomeWHT(t)
-	testTotalIncomeWithAllowances(t)
-
 }
 
-func testTotalIncomeOnly(t *testing.T) {
+func TestTotalIncomeTaxCalculation(t *testing.T) {
 	testCases := []TestCase{
 		{
 			income:      210_000,
@@ -156,7 +152,7 @@ func testTotalIncomeOnly(t *testing.T) {
 
 }
 
-func testTotalIncomeWHT(t *testing.T) {
+func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 	testCases := []TestCase{
 		{
 			income:      500_000,
@@ -240,7 +236,7 @@ func testTotalIncomeWHT(t *testing.T) {
 
 }
 
-func testTotalIncomeWithAllowances(t *testing.T) {
+func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 	testCases := []TestCase{
 		{
 			income: 500_000,
