@@ -13,6 +13,7 @@ import (
 
 type TestCase struct {
 	income      float64
+	wht         float64
 	expectedTax float64
 }
 
@@ -47,6 +48,7 @@ func TestTaxCalculation(t *testing.T) {
 		}
 	})
 	testTotalIncomeOnly(t)
+	testTotalIncomeWHT(t)
 
 }
 
@@ -102,6 +104,90 @@ func testTotalIncomeOnly(t *testing.T) {
 
 				c, rec := setup(t, func() *http.Request {
 					reqJSON := fmt.Sprintf(`{"totalIncome": %f}`, tc.income)
+					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
+				})
+
+				h := &Handler{}
+				h.CalculateTax(c)
+
+				if rec.Code != http.StatusOK {
+					t.Errorf("invalid status code: got %v want %v",
+						rec.Code, http.StatusOK)
+				}
+
+				res := &taxCalculationResponse{}
+				json.Unmarshal(rec.Body.Bytes(), res)
+
+				if res.Tax != tc.expectedTax {
+					t.Errorf("invalid tax: got %v want %v",
+						res.Tax, tc.expectedTax)
+				}
+			})
+
+		}
+	})
+
+}
+
+func testTotalIncomeWHT(t *testing.T) {
+	testCases := []TestCase{
+		{
+			income:      500_000,
+			wht:         25_000,
+			expectedTax: 4000,
+		}, {
+			income:      560_000,
+			wht:         10_000,
+			expectedTax: 25_000,
+		}, {
+			income:      560_001,
+			wht:         10_000,
+			expectedTax: 25_000.15,
+		}, {
+			income:      560_001,
+			wht:         10_000,
+			expectedTax: 25_000.15,
+		}, {
+			income:      1_060_000,
+			wht:         10_000,
+			expectedTax: 100_000,
+		},
+		{
+			income:      1_060_001,
+			wht:         10_000,
+			expectedTax: 100_000.2,
+		},
+		{
+			income:      2_060_000,
+			wht:         10_000,
+			expectedTax: 300_000,
+		},
+		{
+			income:      2_060_001,
+			wht:         10_000,
+			expectedTax: 300_000.35,
+		},
+		{
+			income:      4_000_000,
+			wht:         10_000,
+			expectedTax: 979_000,
+		},
+	}
+
+	t.Run("total income + WHT calculation", func(t *testing.T) {
+
+		for _, tc := range testCases {
+			name := fmt.Sprintf("given total income %.2f and WHT %.2f should return tax amount %.2f",
+				tc.income,
+				tc.wht,
+				tc.expectedTax)
+			t.Run(name, func(t *testing.T) {
+
+				c, rec := setup(t, func() *http.Request {
+					reqJSON := fmt.Sprintf(`{
+						"totalIncome": %f,
+						"wht": %f
+					}`, tc.income, tc.wht)
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 

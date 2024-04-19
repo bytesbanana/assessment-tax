@@ -45,7 +45,7 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		})
 	}
 
-	tax := h.taxCalculator.calculate(req.TotalIncome)
+	tax := h.taxCalculator.calculate(req.TotalIncome, req.WHT)
 
 	return c.JSON(http.StatusOK, taxCalculationResponse{Tax: tax})
 }
