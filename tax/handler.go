@@ -1,19 +1,29 @@
 package tax
 
 import (
+	"errors"
+	"math"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
+var ACCEPT_ALLOWANCE_TYPES = map[string]string{
+	"k-receipt":  "k-receipt",
+	"donation":   "donation",
+	"e-shopping": "e-shopping",
+}
+
 type (
-	taxCalculationRequest struct {
-		TotalIncome float64 `json:"totalIncome"`
-		WHT         float64 `json:"wht"`
-		Allowances  []struct {
-			AllowanceType string  `json:"allowanceType"`
-			Amount        float64 `json:"amount"`
-		} `json:"allowances"`
+	Allowance struct {
+		AllowanceType string  `json:"allowanceType"`
+		Amount        float64 `json:"amount"`
+	}
+
+	TaxInformation struct {
+		TotalIncome float64     `json:"totalIncome"`
+		WHT         float64     `json:"wht"`
+		Allowances  []Allowance `json:"allowances"`
 	}
 
 	taxCalculationResponse struct {
@@ -35,9 +45,18 @@ func NewHandler() *Handler {
 	}
 }
 
+func validateAllowance(allowances []Allowance) error {
+	for _, al := range allowances {
+		if ACCEPT_ALLOWANCE_TYPES[al.AllowanceType] == "" {
+			return errors.New("invalid allowance type")
+		}
+	}
+	return nil
+}
+
 func (h *Handler) CalculateTax(c echo.Context) error {
-	// in the handler for /users?id=<userID>
-	var req taxCalculationRequest
+
+	var req TaxInformation
 	err := c.Bind(&req)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, &Err{
@@ -45,7 +64,15 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		})
 	}
 
-	tax := h.taxCalculator.calculate(req.TotalIncome, req.WHT)
+	err = validateAllowance(req.Allowances)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "invalid  allowance type",
+		})
+	}
 
-	return c.JSON(http.StatusOK, taxCalculationResponse{Tax: tax})
+	tax := h.taxCalculator.calculate(req)
+	roundedTax := math.Round(tax*100) / 100
+
+	return c.JSON(http.StatusOK, taxCalculationResponse{Tax: roundedTax})
 }

@@ -14,6 +14,7 @@ import (
 type TestCase struct {
 	income      float64
 	wht         float64
+	allowances  []Allowance
 	expectedTax float64
 }
 
@@ -47,8 +48,34 @@ func TestTaxCalculation(t *testing.T) {
 				rec.Code, http.StatusBadRequest)
 		}
 	})
+
+	t.Run("given invalid allowance type request should return 400", func(t *testing.T) {
+		c, rec := setup(t, func() *http.Request {
+			reqJSON := `{
+				"totalIncome": 500000.0,
+				"wht": 0.0,
+				"allowances": [
+				  {
+					"allowanceType": "investment",
+					"amount": 0.0
+				  }
+				]
+			  }`
+			return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
+		})
+
+		h := &Handler{}
+		h.CalculateTax(c)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Errorf("invalid http status: got %v want %v",
+				rec.Code, http.StatusBadRequest)
+		}
+	})
+
 	testTotalIncomeOnly(t)
 	testTotalIncomeWHT(t)
+	testTotalIncomeWithAllowances(t)
 
 }
 
@@ -208,6 +235,210 @@ func testTotalIncomeWHT(t *testing.T) {
 				}
 			})
 
+		}
+	})
+
+}
+
+func testTotalIncomeWithAllowances(t *testing.T) {
+	testCases := []TestCase{
+		{
+			income: 500_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        100_000,
+				},
+			},
+			expectedTax: 19_000,
+		},
+		{
+			income: 500_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        50_000,
+				}, {
+					AllowanceType: "donation",
+					Amount:        50_000,
+				},
+			},
+			expectedTax: 19_000,
+		},
+		{
+			income: 250_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 0,
+		},
+		{
+			income: 250_001,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 0.1,
+		}, {
+			income: 600_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 35000,
+		},
+		{
+			income: 600_001,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 35000.15,
+		},
+		{
+			income: 1_100_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 110_000,
+		},
+		{
+			income: 1_100_001,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 110_000.2,
+		},
+		{
+			income: 2_100_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 310000,
+		},
+		{
+			income: 2_100_001,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 310000.35,
+		},
+		{
+			income: 4_000_000,
+			wht:    0,
+			allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        20_000,
+				}, {
+					AllowanceType: "k-receipt",
+					Amount:        20_000,
+				},
+			},
+			expectedTax: 975000,
+		},
+	}
+
+	t.Run("total income with allowances", func(t *testing.T) {
+		for _, tc := range testCases {
+
+			allowances, err := json.Marshal(tc.allowances)
+			if err != nil {
+				t.Errorf("invalid allowances: %v", err)
+				return
+			}
+
+			name := fmt.Sprintf("given total income %.2f and allowances %s should return tax amount %.2f",
+				tc.income,
+				allowances,
+				tc.expectedTax)
+
+			t.Run(name, func(t *testing.T) {
+
+				c, rec := setup(t, func() *http.Request {
+					reqJSON := fmt.Sprintf(`{
+						"totalIncome": %f,
+						"wht": %f,
+						"allowances": %s
+					}`,
+						tc.income,
+						tc.wht,
+						allowances,
+					)
+					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
+				})
+
+				h := &Handler{}
+				h.CalculateTax(c)
+
+				if rec.Code != http.StatusOK {
+					t.Errorf("invalid status code: got %v want %v",
+						rec.Code, http.StatusOK)
+				}
+
+				res := &taxCalculationResponse{}
+				json.Unmarshal(rec.Body.Bytes(), res)
+
+				if res.Tax != tc.expectedTax {
+					t.Errorf("invalid tax: got %v want %v",
+						res.Tax, tc.expectedTax)
+				}
+			})
 		}
 	})
 
