@@ -236,6 +236,14 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 
 }
 
+func sumAllowances(allowances []Allowance) float64 {
+	sum := 0.0
+	for _, allowance := range allowances {
+		sum += allowance.Amount
+	}
+	return sum
+}
+
 func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 	testCases := []TestCase{
 		{
@@ -399,9 +407,9 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 				return
 			}
 
-			name := fmt.Sprintf("given total income %.2f and allowances %s should return tax amount %.2f",
+			name := fmt.Sprintf("given total income %.2f and allowances %.2f should return tax amount %.2f",
 				tc.income,
-				allowances,
+				sumAllowances(tc.allowances),
 				tc.expectedTax)
 
 			t.Run(name, func(t *testing.T) {
