@@ -133,7 +133,7 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 				}
 
 				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
-					t.Errorf("invalid tax: got %v want %v",
+					t.Errorf("invalid tax level: got %v want %v",
 						res.Tax, tc.ExpectedTax)
 				}
 			})
@@ -144,7 +144,7 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 }
 
 func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
-	testCases, err := loadTestCasesFromFile("./data/income_wth_test_data.json")
+	testCases, err := loadTestCasesFromFile("./data/income_wht_test_data.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -179,6 +179,11 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
+						res.Tax, tc.ExpectedTax)
+				}
+
+				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
+					t.Errorf("invalid tax level: got %v want %v",
 						res.Tax, tc.ExpectedTax)
 				}
 			})
