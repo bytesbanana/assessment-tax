@@ -1,6 +1,17 @@
 package tax
 
-const PERSONAL_TAX_DEDUCTION = 60_000
+import "math"
+
+const (
+	PERSONAL_TAX_DEDUCTION = 60_000
+	MAX_TAX_LEVEL_0        = 150_000.0
+	MAX_TAX_LEVEL_1        = 500_000.0
+	MAX_TAX_LEVEL_2        = 1_000_000.0
+	MAX_TAX_LEVEL_3        = 2_000_000.0
+	MAX_TAX_LEVEL_1_AMOUNT = 35_000
+	MAX_TAX_LEVEL_2_AMOUNT = 75_000
+	MAX_TAX_LEVEL_3_AMOUNT = 200_000
+)
 
 type TaxCalculator struct {
 }
@@ -9,21 +20,71 @@ func New() TaxCalculator {
 	return TaxCalculator{}
 }
 
-func (t TaxCalculator) calculate(info TaxInformation) float64 {
+type CalculateTaxDetails struct {
+	tax      float64
+	taxLevel []TaxLevel
+}
+
+func NewTaxDetails() CalculateTaxDetails {
+	return CalculateTaxDetails{
+		tax: 0,
+		taxLevel: []TaxLevel{
+			{
+				Level: "0-150,000",
+				Tax:   0.0,
+			},
+			{
+				Level: "150,001-500,000",
+				Tax:   0.0,
+			},
+			{
+				Level: "500,001-1,000,000",
+				Tax:   0.0,
+			},
+			{
+				Level: "1,000,001-2,000,000",
+				Tax:   0.0,
+			},
+			{
+				Level: "2,000,001 ขึ้นไป",
+				Tax:   0.0,
+			},
+		},
+	}
+}
+
+func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
 	income := t.deductedIncome(info)
 
-	if income <= 150_000 {
-		return 0
-	} else if income <= 500_000 {
+	details := NewTaxDetails()
 
-		return (income-150_000.0)*0.1 - info.WHT
-	} else if income <= 1_000_000 {
-		return (income-500_000)*0.15 + 35_000 - info.WHT
-	} else if income <= 2_000_000 {
-		return (income-1_000_000)*0.2 + 110_000 - info.WHT
+	if income > MAX_TAX_LEVEL_0 {
+		tax := math.Min((income-MAX_TAX_LEVEL_0)*0.1, MAX_TAX_LEVEL_1_AMOUNT)
+		details.tax += tax
+		details.taxLevel[1].Tax = tax
 	}
 
-	return (income-2_000_000)*0.35 + 310000 - info.WHT
+	if income > MAX_TAX_LEVEL_1 {
+		tax := math.Min((income-MAX_TAX_LEVEL_1)*0.15, MAX_TAX_LEVEL_2_AMOUNT)
+		details.tax += tax
+		details.taxLevel[2].Tax = tax
+	}
+
+	if income > MAX_TAX_LEVEL_2 {
+		tax := math.Min((income-MAX_TAX_LEVEL_2)*0.2, MAX_TAX_LEVEL_3_AMOUNT)
+		details.tax += tax
+		details.taxLevel[3].Tax = tax
+	}
+
+	if income > MAX_TAX_LEVEL_3 {
+		tax := (income - MAX_TAX_LEVEL_3) * 0.35
+		details.tax += tax
+		details.taxLevel[4].Tax = tax
+	}
+
+	details.tax = details.tax - info.WHT
+
+	return details
 }
 
 func (t TaxCalculator) deductedIncome(info TaxInformation) float64 {

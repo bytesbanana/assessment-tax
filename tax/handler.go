@@ -2,7 +2,6 @@ package tax
 
 import (
 	"errors"
-	"math"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -77,8 +76,10 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		})
 	}
 
-	tax := h.taxCalculator.calculate(req)
-	roundedTax := math.Round(tax*100) / 100
+	taxDetails := h.taxCalculator.calculate(req)
 
-	return c.JSON(http.StatusOK, TaxCalculationResponse{Tax: roundedTax})
+	return c.JSON(http.StatusOK, TaxCalculationResponse{
+		Tax:      taxDetails.tax,
+		TaxLevel: taxDetails.taxLevel,
+	})
 }
