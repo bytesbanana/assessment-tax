@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -13,10 +14,11 @@ import (
 )
 
 type TestCase struct {
-	income      float64
-	wht         float64
-	allowances  []Allowance
-	expectedTax float64
+	Income           float64     `json:"income"`
+	Wht              float64     `json:"wht"`
+	Allowances       []Allowance `json:"allowances"`
+	ExpectedTax      float64     `json:"expectedTax"`
+	ExpectedTaxLevel []TaxLevel  `json:"expectedTaxLevel"`
 }
 
 func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *httptest.ResponseRecorder) {
@@ -106,11 +108,11 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 	t.Run("total income calculation", func(t *testing.T) {
 
 		for _, tc := range testCases {
-			name := fmt.Sprintf("given total income %.2f should return tax amount %.2f", tc.income, tc.expectedTax)
+			name := fmt.Sprintf("given total income %.2f should return tax amount %.2f with tax level", tc.Income, tc.ExpectedTax)
 			t.Run(name, func(t *testing.T) {
 
 				c, rec := setup(t, func() *http.Request {
-					reqJSON := fmt.Sprintf(`{"totalIncome": %f}`, tc.income)
+					reqJSON := fmt.Sprintf(`{"totalIncome": %f}`, tc.Income)
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 
@@ -125,9 +127,14 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
-				if res.Tax != tc.expectedTax {
+				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
-						res.Tax, tc.expectedTax)
+						res.Tax, tc.ExpectedTax)
+				}
+
+				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
+					t.Errorf("invalid tax: got %v want %v",
+						res.Tax, tc.ExpectedTax)
 				}
 			})
 
@@ -146,16 +153,16 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 
 		for _, tc := range testCases {
 			name := fmt.Sprintf("given total income %.2f and WHT %.2f should return tax amount %.2f",
-				tc.income,
-				tc.wht,
-				tc.expectedTax)
+				tc.Income,
+				tc.Wht,
+				tc.ExpectedTax)
 			t.Run(name, func(t *testing.T) {
 
 				c, rec := setup(t, func() *http.Request {
 					reqJSON := fmt.Sprintf(`{
 						"totalIncome": %f,
 						"wht": %f
-					}`, tc.income, tc.wht)
+					}`, tc.Income, tc.Wht)
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 
@@ -170,9 +177,9 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
-				if res.Tax != tc.expectedTax {
+				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
-						res.Tax, tc.expectedTax)
+						res.Tax, tc.ExpectedTax)
 				}
 			})
 
@@ -189,16 +196,16 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 	t.Run("total income with allowances", func(t *testing.T) {
 		for _, tc := range testCases {
 
-			allowances, err := json.Marshal(tc.allowances)
+			allowances, err := json.Marshal(tc.Allowances)
 			if err != nil {
 				t.Errorf("invalid allowances: %v", err)
 				return
 			}
 
 			name := fmt.Sprintf("given total income %.2f and allowances %.2f should return tax amount %.2f",
-				tc.income,
-				sumAllowances(tc.allowances),
-				tc.expectedTax)
+				tc.Income,
+				sumAllowances(tc.Allowances),
+				tc.ExpectedTax)
 
 			t.Run(name, func(t *testing.T) {
 
@@ -208,8 +215,8 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 						"wht": %f,
 						"allowances": %s
 					}`,
-						tc.income,
-						tc.wht,
+						tc.Income,
+						tc.Wht,
 						allowances,
 					)
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
@@ -226,9 +233,9 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 				res := &TaxCalculationResponse{}
 				json.Unmarshal(rec.Body.Bytes(), res)
 
-				if res.Tax != tc.expectedTax {
+				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
-						res.Tax, tc.expectedTax)
+						res.Tax, tc.ExpectedTax)
 				}
 			})
 		}
