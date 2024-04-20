@@ -1,0 +1,163 @@
+[
+    {
+        "income": 500000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 100000
+            }
+        ],
+        "expectedTax": 19000
+    },
+    {
+        "income": 500000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 50000
+            },
+            {
+                "allowanceType": "donation",
+                "amount": 50000
+            }
+        ],
+        "expectedTax": 19000
+    },
+    {
+        "income": 250000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 0
+    },
+    {
+        "income": 250001,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 0.1
+    },
+    {
+        "income": 600000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 35000
+    },
+    {
+        "income": 600001,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 35000.15
+    },
+    {
+        "income": 1100000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 110000
+    },
+    {
+        "income": 1100001,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 110000.2
+    },
+    {
+        "income": 2100000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 310000
+    },
+    {
+        "income": 2100001,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 310000.35
+    },
+    {
+        "income": 4000000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 20000
+            },
+            {
+                "allowanceType": "k-receipt",
+                "amount": 20000
+            }
+        ],
+        "expectedTax": 975000
+    }
+]

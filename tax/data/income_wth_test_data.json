@@ -1,0 +1,47 @@
+[
+	{
+		"income": 500000,
+		"wht": 25000,
+		"expectedTax": 4000
+	},
+	{
+		"income": 560000,
+		"wht": 10000,
+		"expectedTax": 25000
+	},
+	{
+		"income": 560001,
+		"wht": 10000,
+		"expectedTax": 25000.15
+	},
+	{
+		"income": 560001,
+		"wht": 10000,
+		"expectedTax": 25000.15
+	},
+	{
+		"income": 1060000,
+		"wht": 10000,
+		"expectedTax": 100000
+	},
+	{
+		"income": 1060001,
+		"wht": 10000,
+		"expectedTax": 100000.2
+	},
+	{
+		"income": 2060000,
+		"wht": 10000,
+		"expectedTax": 300000
+	},
+	{
+		"income": 2060001,
+		"wht": 10000,
+		"expectedTax": 300000.35
+	},
+	{
+		"income": 4000000,
+		"wht": 10000,
+		"expectedTax": 979000
+	}
+]

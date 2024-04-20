@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -12,11 +13,10 @@ import (
 )
 
 type TestCase struct {
-	income           float64
-	wht              float64
-	allowances       []Allowance
-	expectedTax      float64
-	expectedTaxLevel []TaxLevel
+	income      float64
+	wht         float64
+	allowances  []Allowance
+	expectedTax float64
 }
 
 func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *httptest.ResponseRecorder) {
@@ -73,51 +73,34 @@ func TestRequestValidtion(t *testing.T) {
 				rec.Code, http.StatusBadRequest)
 		}
 	})
+}
 
+func loadTestCasesFromFile(filePath string) ([]TestCase, error) {
+	var testCases []TestCase
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	err = json.NewDecoder(file).Decode(&testCases)
+	if err != nil {
+		return nil, err
+	}
+	return testCases, nil
+}
+
+func sumAllowances(allowances []Allowance) float64 {
+	sum := 0.0
+	for _, allowance := range allowances {
+		sum += allowance.Amount
+	}
+	return sum
 }
 
 func TestTotalIncomeTaxCalculation(t *testing.T) {
-	testCases := []TestCase{
-		{
-			income:      210_000,
-			expectedTax: 0,
-		},
-		{
-			income:      210_001,
-			expectedTax: 0.1,
-		},
-		{
-			income:      500_000,
-			expectedTax: 29_000,
-		},
-		{
-			income:      560_000,
-			expectedTax: 35_000,
-		},
-		{
-			income:      560_001,
-			expectedTax: 35_000.15,
-		},
-		{
-			income:      1_060_000,
-			expectedTax: 110_000,
-		},
-		{
-			income:      1_060_001,
-			expectedTax: 110_000.2,
-		},
-		{
-			income:      2_060_000,
-			expectedTax: 310_000,
-		},
-		{
-			income:      2_060_001,
-			expectedTax: 310_000.35,
-		},
-		{
-			income:      4_000_000,
-			expectedTax: 989_000,
-		},
+	testCases, err := loadTestCasesFromFile("./data/income_test_data.json")
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	t.Run("total income calculation", func(t *testing.T) {
@@ -154,48 +137,9 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 }
 
 func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
-	testCases := []TestCase{
-		{
-			income:      500_000,
-			wht:         25_000,
-			expectedTax: 4000,
-		}, {
-			income:      560_000,
-			wht:         10_000,
-			expectedTax: 25_000,
-		}, {
-			income:      560_001,
-			wht:         10_000,
-			expectedTax: 25_000.15,
-		}, {
-			income:      560_001,
-			wht:         10_000,
-			expectedTax: 25_000.15,
-		}, {
-			income:      1_060_000,
-			wht:         10_000,
-			expectedTax: 100_000,
-		},
-		{
-			income:      1_060_001,
-			wht:         10_000,
-			expectedTax: 100_000.2,
-		},
-		{
-			income:      2_060_000,
-			wht:         10_000,
-			expectedTax: 300_000,
-		},
-		{
-			income:      2_060_001,
-			wht:         10_000,
-			expectedTax: 300_000.35,
-		},
-		{
-			income:      4_000_000,
-			wht:         10_000,
-			expectedTax: 979_000,
-		},
+	testCases, err := loadTestCasesFromFile("./data/income_wth_test_data.json")
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	t.Run("total income + WHT calculation", func(t *testing.T) {
@@ -237,168 +181,11 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 
 }
 
-func sumAllowances(allowances []Allowance) float64 {
-	sum := 0.0
-	for _, allowance := range allowances {
-		sum += allowance.Amount
-	}
-	return sum
-}
-
 func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
-	testCases := []TestCase{
-		{
-			income: 500_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        100_000,
-				},
-			},
-			expectedTax: 19_000,
-		},
-		{
-			income: 500_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        50_000,
-				}, {
-					AllowanceType: "donation",
-					Amount:        50_000,
-				},
-			},
-			expectedTax: 19_000,
-		},
-		{
-			income: 250_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 0,
-		},
-		{
-			income: 250_001,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 0.1,
-		}, {
-			income: 600_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 35000,
-		},
-		{
-			income: 600_001,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 35000.15,
-		},
-		{
-			income: 1_100_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 110_000,
-		},
-		{
-			income: 1_100_001,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 110_000.2,
-		},
-		{
-			income: 2_100_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 310000,
-		},
-		{
-			income: 2_100_001,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 310000.35,
-		},
-		{
-			income: 4_000_000,
-			wht:    0,
-			allowances: []Allowance{
-				{
-					AllowanceType: "donation",
-					Amount:        20_000,
-				}, {
-					AllowanceType: "k-receipt",
-					Amount:        20_000,
-				},
-			},
-			expectedTax: 975000,
-		},
+	testCases, err := loadTestCasesFromFile("./data/income_allowances_test_data.json")
+	if err != nil {
+		t.Fatal(err)
 	}
-
 	t.Run("total income with allowances", func(t *testing.T) {
 		for _, tc := range testCases {
 
