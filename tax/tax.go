@@ -21,13 +21,15 @@ func New() TaxCalculator {
 }
 
 type CalculateTaxDetails struct {
-	tax      float64
-	taxLevel []TaxLevel
+	tax       float64
+	taxRefund float64
+	taxLevel  []TaxLevel
 }
 
 func NewTaxDetails() CalculateTaxDetails {
 	return CalculateTaxDetails{
-		tax: 0,
+		tax:       0,
+		taxRefund: 0,
 		taxLevel: []TaxLevel{
 			{
 				Level: "0-150,000",
@@ -54,7 +56,7 @@ func NewTaxDetails() CalculateTaxDetails {
 }
 
 func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
-	income := t.deductedIncome(info)
+	income := t.calDeductedIncome(info)
 
 	details := NewTaxDetails()
 
@@ -82,12 +84,13 @@ func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
 		details.taxLevel[4].Tax = tax
 	}
 
-	details.tax = details.tax - info.WHT
+	details.taxRefund = t.calTaxRefund(details.tax, info.WHT)
+	details.tax = math.Max(details.tax-info.WHT, 0)
 
 	return details
 }
 
-func (t TaxCalculator) deductedIncome(info TaxInformation) float64 {
+func (t TaxCalculator) calDeductedIncome(info TaxInformation) float64 {
 	baseDeduction := info.TotalIncome - PERSONAL_TAX_DEDUCTION
 
 	sumAllawances := 0.0
@@ -96,4 +99,11 @@ func (t TaxCalculator) deductedIncome(info TaxInformation) float64 {
 	}
 
 	return baseDeduction - sumAllawances
+}
+
+func (t TaxCalculator) calTaxRefund(tax float64, wht float64) float64 {
+	if wht <= tax {
+		return 0
+	}
+	return math.Max(wht-tax, 0)
 }

@@ -3,6 +3,7 @@
 		"income": 500000,
 		"wht": 25000,
 		"expectedTax": 4000,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -30,6 +31,7 @@
 		"income": 560000,
 		"wht": 10000,
 		"expectedTax": 25000,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -57,6 +59,7 @@
 		"income": 560001,
 		"wht": 10000,
 		"expectedTax": 25000.15,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -84,6 +87,7 @@
 		"income": 1060000,
 		"wht": 10000,
 		"expectedTax": 100000,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -111,6 +115,7 @@
 		"income": 1060001,
 		"wht": 10000,
 		"expectedTax": 100000.2,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -138,6 +143,7 @@
 		"income": 2060000,
 		"wht": 10000,
 		"expectedTax": 300000,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -165,6 +171,7 @@
 		"income": 2060001,
 		"wht": 10000,
 		"expectedTax": 300000.35,
+		"taxRefund": 0,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",
@@ -192,6 +199,35 @@
 		"income": 4000000,
 		"wht": 10000,
 		"expectedTax": 979000,
+		"taxRefund": 0,
+		"expectedTaxLevel": [
+			{
+				"level": "0-150,000",
+				"tax": 0.0
+			},
+			{
+				"level": "150,001-500,000",
+				"tax": 35000
+			},
+			{
+				"level": "500,001-1,000,000",
+				"tax": 75000
+			},
+			{
+				"level": "1,000,001-2,000,000",
+				"tax": 200000
+			},
+			{
+				"level": "2,000,001 ขึ้นไป",
+				"tax": 679000
+			}
+		]
+	},
+	{
+		"income": 4000000,
+		"wht": 1000000,
+		"expectedTax": 0,
+		"taxRefund": 11000,
 		"expectedTaxLevel": [
 			{
 				"level": "0-150,000",

@@ -30,8 +30,9 @@ type (
 	}
 
 	TaxCalculationResponse struct {
-		Tax      float64    `json:"tax"`
-		TaxLevel []TaxLevel `json:"taxLevel"`
+		Tax       float64    `json:"tax"`
+		TaxRefund float64    `json:"taxRefund"`
+		TaxLevel  []TaxLevel `json:"taxLevel"`
 	}
 
 	Handler struct {
@@ -78,7 +79,8 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 	taxDetails := h.taxCalculator.calculate(req)
 
 	return c.JSON(http.StatusOK, TaxCalculationResponse{
-		Tax:      taxDetails.tax,
-		TaxLevel: taxDetails.taxLevel,
+		Tax:       taxDetails.tax,
+		TaxRefund: taxDetails.taxRefund,
+		TaxLevel:  taxDetails.taxLevel,
 	})
 }
