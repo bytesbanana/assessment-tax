@@ -8,9 +8,8 @@ import (
 )
 
 var ACCEPT_ALLOWANCE_TYPES = map[string]string{
-	"k-receipt":  "k-receipt",
-	"donation":   "donation",
-	"e-shopping": "e-shopping",
+	"k-receipt": "k-receipt",
+	"donation":  "donation",
 }
 
 type (
