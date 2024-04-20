@@ -242,6 +242,11 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 					t.Errorf("invalid tax: got %v want %v",
 						res.Tax, tc.ExpectedTax)
 				}
+
+				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
+					t.Errorf("invalid tax level: got %v want %v",
+						res.Tax, tc.ExpectedTax)
+				}
 			})
 		}
 	})
