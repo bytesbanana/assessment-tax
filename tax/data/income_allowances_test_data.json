@@ -9,6 +9,7 @@
             }
         ],
         "expectedTax": 19000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -46,6 +47,7 @@
             }
         ],
         "expectedTax": 19000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -83,6 +85,7 @@
             }
         ],
         "expectedTax": 0,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -120,6 +123,7 @@
             }
         ],
         "expectedTax": 0.1,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -157,6 +161,7 @@
             }
         ],
         "expectedTax": 35000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -194,6 +199,7 @@
             }
         ],
         "expectedTax": 35000.15,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -231,6 +237,7 @@
             }
         ],
         "expectedTax": 110000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -268,6 +275,7 @@
             }
         ],
         "expectedTax": 110000.2,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -305,6 +313,7 @@
             }
         ],
         "expectedTax": 310000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -342,6 +351,7 @@
             }
         ],
         "expectedTax": 310000.35,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -379,6 +389,7 @@
             }
         ],
         "expectedTax": 975000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",

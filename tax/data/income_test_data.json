@@ -2,6 +2,7 @@
     {
         "income": 210000,
         "expectedTax": 0,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -28,6 +29,7 @@
     {
         "income": 210001,
         "expectedTax": 0.1,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -54,6 +56,7 @@
     {
         "income": 500000,
         "expectedTax": 29000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -80,6 +83,7 @@
     {
         "income": 560000,
         "expectedTax": 35000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -106,6 +110,7 @@
     {
         "income": 560001,
         "expectedTax": 35000.15,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -132,6 +137,7 @@
     {
         "income": 1060000,
         "expectedTax": 110000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -158,6 +164,7 @@
     {
         "income": 1060001,
         "expectedTax": 110000.2,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -184,6 +191,7 @@
     {
         "income": 2060000,
         "expectedTax": 310000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -210,6 +218,7 @@
     {
         "income": 2060001,
         "expectedTax": 310000.35,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",
@@ -236,6 +245,7 @@
     {
         "income": 4000000,
         "expectedTax": 989000,
+        "taxRefund": 0,
         "expectedTaxLevel": [
             {
                 "level": "0-150,000",

@@ -17,6 +17,7 @@ type TestCase struct {
 	Income           float64     `json:"income"`
 	Wht              float64     `json:"wht"`
 	Allowances       []Allowance `json:"allowances"`
+	TaxRefund        float64     `json:"taxRefund"`
 	ExpectedTax      float64     `json:"expectedTax"`
 	ExpectedTaxLevel []TaxLevel  `json:"expectedTaxLevel"`
 }
@@ -31,6 +32,28 @@ func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *
 	c.SetPath("/wallets")
 
 	return c, rec
+}
+
+func loadTestCasesFromFile(filePath string) ([]TestCase, error) {
+	var testCases []TestCase
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	err = json.NewDecoder(file).Decode(&testCases)
+	if err != nil {
+		return nil, err
+	}
+	return testCases, nil
+}
+
+func sumAllowances(allowances []Allowance) float64 {
+	sum := 0.0
+	for _, allowance := range allowances {
+		sum += allowance.Amount
+	}
+	return sum
 }
 
 func TestRequestValidtion(t *testing.T) {
@@ -77,28 +100,6 @@ func TestRequestValidtion(t *testing.T) {
 	})
 }
 
-func loadTestCasesFromFile(filePath string) ([]TestCase, error) {
-	var testCases []TestCase
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	err = json.NewDecoder(file).Decode(&testCases)
-	if err != nil {
-		return nil, err
-	}
-	return testCases, nil
-}
-
-func sumAllowances(allowances []Allowance) float64 {
-	sum := 0.0
-	for _, allowance := range allowances {
-		sum += allowance.Amount
-	}
-	return sum
-}
-
 func TestTotalIncomeTaxCalculation(t *testing.T) {
 	testCases, err := loadTestCasesFromFile("./data/income_test_data.json")
 	if err != nil {
@@ -130,6 +131,11 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
 						res.Tax, tc.ExpectedTax)
+				}
+
+				if res.TaxRefund != tc.TaxRefund {
+					t.Errorf("invalid tax refund: got %v want %v",
+						res.TaxRefund, tc.TaxRefund)
 				}
 
 				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
@@ -180,6 +186,11 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
 						res.Tax, tc.ExpectedTax)
+				}
+
+				if res.TaxRefund != tc.TaxRefund {
+					t.Errorf("invalid tax refund: got %v want %v",
+						res.TaxRefund, tc.TaxRefund)
 				}
 
 				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
@@ -241,6 +252,11 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
 						res.Tax, tc.ExpectedTax)
+				}
+
+				if res.TaxRefund != tc.TaxRefund {
+					t.Errorf("invalid tax refund: got %v want %v",
+						res.TaxRefund, tc.TaxRefund)
 				}
 
 				if !reflect.DeepEqual(res.TaxLevel, tc.ExpectedTaxLevel) {
