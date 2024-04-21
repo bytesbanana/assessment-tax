@@ -11,10 +11,24 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bytesbanana/assessment-tax/admin"
 	"github.com/bytesbanana/assessment-tax/postgres"
 	"github.com/bytesbanana/assessment-tax/tax"
+
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
+
+func basicAuthMiddleware() echo.MiddlewareFunc {
+	return middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+
+		if username == os.Getenv("ADMIN_USERNAME") && password == os.Getenv("ADMIN_PASSWORD") {
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
 
 func main() {
 	port, err := strconv.Atoi(os.Getenv("PORT"))
@@ -34,6 +48,12 @@ func main() {
 
 	taxHandler := tax.New(p)
 	e.POST("/tax/calculations", taxHandler.CalculateTax)
+
+	adminHandler := admin.New(p)
+	adminGroup := e.Group("/admin")
+	adminGroup.Use(basicAuthMiddleware())
+	adminGroup.POST("/deductions/k-receipt", adminHandler.SetPersonalDeductionsConfig)
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
