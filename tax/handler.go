@@ -1,8 +1,10 @@
 package tax
 
 import (
+	"encoding/csv"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/bytesbanana/assessment-tax/postgres"
 	"github.com/labstack/echo/v4"
@@ -98,5 +100,79 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		Tax:       taxDetails.tax,
 		TaxRefund: taxDetails.taxRefund,
 		TaxLevel:  taxDetails.taxLevel,
+	})
+}
+
+func (h *Handler) CalculateTaxFromTaxFile(c echo.Context) error {
+	// Source
+	taxFile, err := c.FormFile("taxFile")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "unable to read csv file" + err.Error(),
+		})
+	}
+	src, err := taxFile.Open()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "unable to read csv file",
+		})
+	}
+	defer src.Close()
+
+	reader := csv.NewReader(src)
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "unable to read csv file",
+		})
+	}
+	headers := records[0]
+
+	taxDetails := []CalculateTaxDetails{}
+
+	for _, row := range records[1:] {
+		taxInfo := TaxInformation{
+			Allowances: []Allowance{
+				{
+					AllowanceType: "donation",
+					Amount:        0,
+				},
+			},
+		}
+		for ic, col := range row {
+			data, err := strconv.ParseFloat(col, 64)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, &Err{
+					Message: "invalid data type in the csv file",
+				})
+			}
+
+			if headers[ic] == "totalIncome" {
+				taxInfo.TotalIncome = data
+			} else if headers[ic] == "wht" {
+				taxInfo.WHT = data
+			} else if headers[ic] == "allowances" {
+				taxInfo.Allowances[0].Amount = data
+			}
+		}
+
+		taxDetails = append(taxDetails, h.taxCalculator.calculate(taxInfo))
+	}
+
+	taxes := []TaxCalculationResponse{}
+
+	for _, td := range taxDetails {
+		taxes = append(taxes, TaxCalculationResponse{
+			Tax:       td.tax,
+			TaxRefund: td.taxRefund,
+			TaxLevel:  td.taxLevel,
+		})
+	}
+
+	return c.JSON(http.StatusOK, struct {
+		Taxes []TaxCalculationResponse `json:"taxes"`
+	}{
+		Taxes: taxes,
 	})
 }

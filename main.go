@@ -48,6 +48,7 @@ func main() {
 
 	taxHandler := tax.New(p)
 	e.POST("/tax/calculations", taxHandler.CalculateTax)
+	e.POST("/tax/calculations/upload-csv", taxHandler.CalculateTaxFromTaxFile)
 
 	adminHandler := admin.New(p)
 	adminGroup := e.Group("/admin")
