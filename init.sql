@@ -24,4 +24,11 @@ VALUES (
         'PERSONAL_DEDUCTION',
         60000,
         'system'
-    );
+    ),
+    (
+        'Maximum K Reciept deduction',
+        'MAX_K_RECEIPT_DEDUCTION',
+        50000,
+        'system'
+    ),
+    ;
