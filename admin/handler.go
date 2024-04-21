@@ -87,6 +87,12 @@ func (h *Handler) SetMaxKReceiptDeduction(c echo.Context) error {
 		})
 	}
 
+	if *req.Amount < 1 || *req.Amount > 100_000 {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "amount must be between 1 and 100,000",
+		})
+	}
+
 	maxKReceipt, err := h.store.SetTaxConfig("MAX_K_RECEIPT_DEDUCTION", *req.Amount)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, &Err{
