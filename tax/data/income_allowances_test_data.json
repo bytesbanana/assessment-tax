@@ -449,5 +449,39 @@
                 "tax": 0.0
             }
         ]
+    },
+    {
+        "income": 500000,
+        "wht": 0,
+        "allowances": [
+            {
+                "allowanceType": "donation",
+                "amount": 200000
+            }
+        ],
+        "expectedTax": 19000,
+        "taxRefund": 0,
+        "expectedTaxLevel": [
+            {
+                "level": "0-150,000",
+                "tax": 0.0
+            },
+            {
+                "level": "150,001-500,000",
+                "tax": 19000
+            },
+            {
+                "level": "500,001-1,000,000",
+                "tax": 0.0
+            },
+            {
+                "level": "1,000,001-2,000,000",
+                "tax": 0.0
+            },
+            {
+                "level": "2,000,001 ขึ้นไป",
+                "tax": 0.0
+            }
+        ]
     }
 ]
