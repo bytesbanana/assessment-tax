@@ -16,7 +16,7 @@ type (
 		store Storer
 	}
 
-	SetPersonalDeductionRequest struct {
+	SetConfigValueRequest struct {
 		Amount *float64 `json:"amount,omitempty" validate:"required"`
 	}
 
@@ -33,7 +33,7 @@ func New(db Storer) *Handler {
 }
 
 func (h *Handler) SetPersonalDeductionsConfig(c echo.Context) error {
-	var req SetPersonalDeductionRequest
+	var req SetConfigValueRequest
 	var err error
 
 	err = c.Bind(&req)
@@ -60,5 +60,37 @@ func (h *Handler) SetPersonalDeductionsConfig(c echo.Context) error {
 		PersonalDeduction float64 `json:"personalDeduction"`
 	}{
 		PersonalDeduction: personalDeduction.Value,
+	})
+}
+
+func (h *Handler) SetMaxKReceiptDeduction(c echo.Context) error {
+
+	var req SetConfigValueRequest
+	var err error
+
+	err = c.Bind(&req)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "invalid request body",
+		})
+	}
+
+	if req.Amount == nil {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "invalid request body",
+		})
+	}
+
+	maxKReceipt, err := h.store.SetTaxConfig("MAX_K_RECEIPT_DEDUCTION", *req.Amount)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &Err{
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, struct {
+		KReceipt float64 `json:"kReceipt"`
+	}{
+		KReceipt: maxKReceipt.Value,
 	})
 }
