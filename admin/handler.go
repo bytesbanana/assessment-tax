@@ -49,6 +49,12 @@ func (h *Handler) SetPersonalDeductionsConfig(c echo.Context) error {
 		})
 	}
 
+	if *req.Amount < 10_000 || *req.Amount > 100_000 {
+		return c.JSON(http.StatusBadRequest, &Err{
+			Message: "amount must be between 10,000 and 100,000",
+		})
+	}
+
 	personalDeduction, err := h.store.SetTaxConfig("PERSONAL_DEDUCTION", *req.Amount)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, &Err{
