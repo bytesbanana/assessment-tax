@@ -14,13 +14,13 @@ const (
 
 type TaxCalculator struct {
 	personalDededucation float64
-	maxKRecieptDeduction float64
+	maxKReceiptDeduction float64
 }
 
-func NewTaxCalculator(personalDeductation, maxKRecieptDeduction float64) TaxCalculator {
+func NewTaxCalculator(personalDeductation, maxKReceiptDeduction float64) TaxCalculator {
 	return TaxCalculator{
 		personalDededucation: personalDeductation,
-		maxKRecieptDeduction: maxKRecieptDeduction,
+		maxKReceiptDeduction: maxKReceiptDeduction,
 	}
 }
 
@@ -109,7 +109,7 @@ func (t TaxCalculator) calDeductedIncome(info TaxInformation) float64 {
 		}
 	}
 
-	return baseDeduction - sumDonation - math.Min(sumKReceipt, t.maxKRecieptDeduction)
+	return baseDeduction - sumDonation - math.Min(sumKReceipt, t.maxKReceiptDeduction)
 }
 
 func (t TaxCalculator) calTaxRefund(tax float64, wht float64) float64 {

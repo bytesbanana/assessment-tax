@@ -55,21 +55,21 @@ type (
 func New(db Storer) *Handler {
 
 	personalDeducation := 60_000.0
-	maxKRecieptDeduction := 50_000.0
+	maxKReceiptDeduction := 50_000.0
 
 	personalDeducationConfig, err := db.GetTaxConfig("PERSONAL_DEDUCTION")
 	if err == nil {
 		personalDeducation = personalDeducationConfig.Value
 	}
-	maxKRecieptDeductionConfig, err := db.GetTaxConfig("MAX_K_RECEIPT_DEDUCTION")
+	maxKReceiptDeductionConfig, err := db.GetTaxConfig("MAX_K_RECEIPT_DEDUCTION")
 	if err == nil {
-		maxKRecieptDeduction = maxKRecieptDeductionConfig.Value
+		maxKReceiptDeduction = maxKReceiptDeductionConfig.Value
 	}
 
 	return &Handler{
 		taxCalculator: NewTaxCalculator(
 			personalDeducation,
-			maxKRecieptDeduction,
+			maxKReceiptDeduction,
 		),
 		storer: db,
 	}

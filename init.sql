@@ -26,7 +26,7 @@ VALUES (
         'system'
     ),
     (
-        'Maximum K Reciept deduction',
+        'Maximum K Receipt deduction',
         'MAX_K_RECEIPT_DEDUCTION',
         50000,
         'system'
