@@ -21,9 +21,9 @@ K-Tax เป็น Application คำนวนภาษี ที่ให้ผ
   - 500,001 - 1,000,000 อัตราภาษี 15%
   - 1,000,001 - 2,000,000 อัตราภาษี 20%
   - มากกว่า 2,000,000 อัตราภาษี 35%
-- เงินบริจาคสามารถหย่อนได้สูงสุด 100,000 บาท
-- ค่าลดหย่อนส่วนตัวมีค่าเริ่มต้นที่ 60,000 บาท
-- k-receipt โครงการช้อปลดภาษี ซึ่งสามารถลดหย่อนได้สูงสุด 50,000 บาทเป็นค่าเริ่มต้น
+- [x] เงินบริจาคสามารถหย่อนได้สูงสุด 100,000 บาท
+- [x] ค่าลดหย่อนส่วนตัวมีค่าเริ่มต้นที่ 60,000 บาท
+- [x] k-receipt โครงการช้อปลดภาษี ซึ่งสามารถลดหย่อนได้สูงสุด 50,000 บาทเป็นค่าเริ่มต้น
 - แอดมิน สามารถกำหนดค่าลดหย่อนส่วนตัวได้โดยไม่เกิน 100,000 บาท
 - แอดมิน สามารถกำหนด k-receipt สูงสุดได้ แต่ไม่เกิน 100,000 บาท
 - ค่าลดหย่อนส่วนตัวต้องมีค่ามากกว่า 10,000 บาท
@@ -35,19 +35,19 @@ K-Tax เป็น Application คำนวนภาษี ที่ให้ผ
 - [x] ใช้ `go module`
 - [x] ใช้ go module `go mod init github.com/<your github name>/assessment-tax`
 - [x] ใช้ go 1.21 or above
-- ใช้ `PostgreSQL`
-- API port _MUST_ get from `environment variable` name `PORT`
+- [x] ใช้ `PostgreSQL`
+- [x] API port _MUST_ get from `environment variable` name `PORT`
 - database url _MUST_ get from environment variable name `DATABASE_URL`
   - ตัวอย่าง `DATABASE_URL=host={REPLACE_ME} port=5432 user={REPLACE_ME} password={REPLACE_ME} dbname={REPLACE_ME} sslmode=disable`
-- ใช้ `docker compose` สำหรับต่อ Database
+- [x] ใช้ `docker compose` สำหรับต่อ Database
 - [x] API support `Graceful Shutdown`
   - เช่น ถ้ามีการกด `Ctrl + C` จะ print `shutting down the server`
 - มี Dockerfile สำหรับ build image และเป็น `Multi-stage build`
 - [x] ใช้ `HTTP Method` และ `HTTP Status Code` อย่างเหมาะสม
 - ใช้ `gofmt` และ `go vet`
-- แยก Branch ของแต่ละ Story ออกจาก `main` และ Merge กลับไปยัง `main` Branch เสมอ
+- [x] แยก Branch ของแต่ละ Story ออกจาก `main` และ Merge กลับไปยัง `main` Branch เสมอ
   - เช่น story ที่ 1 จะใช้ branch ชื่อ `feature/story-1` หรือ `feature/store-1-create-tax-calculation`
-- admin กำหนด Basic authen ด้วย username: `adminTax`, password: `admin!`
+- [x] admin กำหนด Basic authen ด้วย username: `adminTax`, password: `admin!`
   - username และ password ต้องเป็น environment variable
   - และ `env` ต้องเป็นชื่อ `ADMIN_USERNAME` และ `ADMIN_PASSWORD`
 - **การ run program จะใช้คำสั่ง docker compose up เพื่อเตรียม environment และ go run main.go เพื่อ start api**
@@ -265,7 +265,7 @@ Response body
 ```
 ----
 
-### Story: EXP05
+### Story: EXP05 ✅
 
 ```
 * As admin, I want to setting personal deduction
@@ -290,7 +290,7 @@ Response body
 ----
 
 
-### Story: EXP06
+### Story: EXP06 ✅
 
 ```
 * As user, I want to calculate my tax with csv
@@ -324,7 +324,7 @@ Response body
 ```
 
 -------
-### Story: EXP07
+### Story: EXP07 ✅
 
 ```
 * As user, I want to calculate my tax with tax level detail
@@ -396,7 +396,7 @@ Response body
 
 ----
 
-### Story: EXP08
+### Story: EXP08 ✅
 
 ```
 * As admin, I want to setting k-receipt deduction
