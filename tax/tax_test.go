@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bytesbanana/assessment-tax/postgres"
 	"github.com/labstack/echo/v4"
 )
 
@@ -20,6 +21,14 @@ type TestCase struct {
 	TaxRefund        float64     `json:"taxRefund"`
 	ExpectedTax      float64     `json:"expectedTax"`
 	ExpectedTaxLevel []TaxLevel  `json:"expectedTaxLevel"`
+}
+
+type StubTaxHandler struct {
+	configs map[string]*postgres.TaxConfig
+}
+
+func (t *StubTaxHandler) GetTaxConfig(key string) (*postgres.TaxConfig, error) {
+	return t.configs[key], nil
 }
 
 func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *httptest.ResponseRecorder) {
@@ -66,7 +75,13 @@ func TestRequestValidtion(t *testing.T) {
 			return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 		})
 
-		h := &Handler{}
+		h := New(&StubTaxHandler{
+			configs: map[string]*postgres.TaxConfig{
+				"PERSONAL_DEDUCTION": {
+					Value: 60_000,
+				},
+			},
+		})
 		h.CalculateTax(c)
 
 		if rec.Code != http.StatusBadRequest {
@@ -117,7 +132,14 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 
-				h := &Handler{}
+				h := New(&StubTaxHandler{
+					configs: map[string]*postgres.TaxConfig{
+						"PERSONAL_DEDUCTION": {
+							Value: 60_000,
+						},
+					},
+				})
+
 				h.CalculateTax(c)
 
 				if rec.Code != http.StatusOK {
@@ -172,7 +194,13 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 
-				h := &Handler{}
+				h := New(&StubTaxHandler{
+					configs: map[string]*postgres.TaxConfig{
+						"PERSONAL_DEDUCTION": {
+							Value: 60_000,
+						},
+					},
+				})
 				h.CalculateTax(c)
 
 				if rec.Code != http.StatusOK {
@@ -238,7 +266,13 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 					return httptest.NewRequest(http.MethodPost, "/", strings.NewReader(reqJSON))
 				})
 
-				h := &Handler{}
+				h := New(&StubTaxHandler{
+					configs: map[string]*postgres.TaxConfig{
+						"PERSONAL_DEDUCTION": {
+							Value: 60_000,
+						},
+					},
+				})
 				h.CalculateTax(c)
 
 				if rec.Code != http.StatusOK {

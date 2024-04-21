@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/bytesbanana/assessment-tax/postgres"
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,8 +36,13 @@ type (
 		TaxLevel  []TaxLevel `json:"taxLevel"`
 	}
 
+	Storer interface {
+		GetTaxConfig(key string) (*postgres.TaxConfig, error)
+	}
+
 	Handler struct {
 		taxCalculator TaxCalculator
+		storer        Storer
 	}
 
 	Err struct {
@@ -44,9 +50,19 @@ type (
 	}
 )
 
-func NewHandler() *Handler {
+func New(db Storer) *Handler {
+
+	personalDededucationConfig, err := db.GetTaxConfig("PERSONAL_DEDUCTION")
+	if err != nil {
+		return &Handler{
+			taxCalculator: NewTaxCalculator(60_000),
+			storer:        db,
+		}
+	}
+
 	return &Handler{
-		taxCalculator: New(),
+		taxCalculator: NewTaxCalculator(personalDededucationConfig.Value),
+		storer:        db,
 	}
 }
 

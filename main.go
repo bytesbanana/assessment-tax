@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bytesbanana/assessment-tax/postgres"
 	"github.com/bytesbanana/assessment-tax/tax"
 	"github.com/labstack/echo/v4"
 )
@@ -21,12 +22,17 @@ func main() {
 		log.Fatalf("invalid port: %v", err)
 	}
 
+	p, err := postgres.New()
+	if err != nil {
+		panic(err)
+	}
+
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Go Bootcamp!")
 	})
 
-	taxHandler := tax.NewHandler()
+	taxHandler := tax.New(p)
 	e.POST("/tax/calculations", taxHandler.CalculateTax)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
