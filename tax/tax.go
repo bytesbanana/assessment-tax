@@ -3,7 +3,6 @@ package tax
 import "math"
 
 const (
-	PERSONAL_TAX_DEDUCTION = 60_000
 	MAX_TAX_LEVEL_0        = 150_000.0
 	MAX_TAX_LEVEL_1        = 500_000.0
 	MAX_TAX_LEVEL_2        = 1_000_000.0
@@ -14,10 +13,13 @@ const (
 )
 
 type TaxCalculator struct {
+	personalDededucation float64
 }
 
-func New() TaxCalculator {
-	return TaxCalculator{}
+func NewTaxCalculator(personalDededucation float64) TaxCalculator {
+	return TaxCalculator{
+		personalDededucation: personalDededucation,
+	}
 }
 
 type CalculateTaxDetails struct {
@@ -91,7 +93,7 @@ func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
 }
 
 func (t TaxCalculator) calDeductedIncome(info TaxInformation) float64 {
-	baseDeduction := info.TotalIncome - PERSONAL_TAX_DEDUCTION
+	baseDeduction := info.TotalIncome - t.personalDededucation
 
 	sumAllawances := 0.0
 	for _, allowance := range info.Allowances {
