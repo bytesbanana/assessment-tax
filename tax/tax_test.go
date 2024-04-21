@@ -38,7 +38,7 @@ func setup(t *testing.T, buildRequestFunc func() *http.Request) (echo.Context, *
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	c.SetPath("/wallets")
+	c.SetPath("/tax/calculations")
 
 	return c, rec
 }
