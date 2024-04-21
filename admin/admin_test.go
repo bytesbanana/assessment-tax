@@ -194,4 +194,62 @@ func TestMaxKReceiptDeduction(t *testing.T) {
 		}
 
 	})
+
+	t.Run("given new k-receipt deduction amount 0 should return 400", func(t *testing.T) {
+
+		e := echo.New()
+		reqJSON := fmt.Sprintf(`{"amount": %f}`, 0.0)
+		req := httptest.NewRequest(http.MethodPost, "/admin/deductions/k-receipt", strings.NewReader(reqJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		stubAdminHandler := &StubAdminHandler{
+			Configs: map[string]*postgres.TaxConfig{
+				"MAX_K_RECEIPT_DEDUCTION": {
+					Key:   "MAX_K_RECEIPT_DEDUCTION",
+					Name:  "Max k-receipt deduction",
+					Value: 50_000,
+				},
+			},
+		}
+		handler := New(stubAdminHandler)
+
+		handler.SetMaxKReceiptDeduction(c)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Errorf("invalid http status: got %v want %v",
+				rec.Code, http.StatusOK)
+		}
+
+	})
+
+	t.Run("given new k-receipt deduction amount 100,001 should return 400", func(t *testing.T) {
+
+		e := echo.New()
+		reqJSON := fmt.Sprintf(`{"amount": %f}`, 100001.0)
+		req := httptest.NewRequest(http.MethodPost, "/admin/deductions/k-receipt", strings.NewReader(reqJSON))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		stubAdminHandler := &StubAdminHandler{
+			Configs: map[string]*postgres.TaxConfig{
+				"MAX_K_RECEIPT_DEDUCTION": {
+					Key:   "MAX_K_RECEIPT_DEDUCTION",
+					Name:  "Max k-receipt deduction",
+					Value: 50_000,
+				},
+			},
+		}
+		handler := New(stubAdminHandler)
+
+		handler.SetMaxKReceiptDeduction(c)
+
+		if rec.Code != http.StatusBadRequest {
+			t.Errorf("invalid http status: got %v want %v",
+				rec.Code, http.StatusOK)
+		}
+
+	})
 }
