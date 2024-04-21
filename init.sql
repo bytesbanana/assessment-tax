@@ -1,7 +1,6 @@
 -- Sequence and defined type
 CREATE SEQUENCE IF NOT EXISTS config_id_seq;
 -- Table Definition
-DELETE TABLE if EXISTS "tax_configs";
 CREATE TABLE "tax_configs" (
     "id" int4 NOT NULL DEFAULT nextval('config_id_seq'::regclass),
     "name" varchar(255) NOT NULL,
@@ -13,6 +12,7 @@ CREATE TABLE "tax_configs" (
     "updated_at" timestamp,
     PRIMARY KEY ("id")
 );
+
 INSERT INTO "tax_configs" (
         "name",
         "key",
@@ -30,5 +30,4 @@ VALUES (
         'MAX_K_RECEIPT_DEDUCTION',
         50000,
         'system'
-    ),
-    ;
+    );
