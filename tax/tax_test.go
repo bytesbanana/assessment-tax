@@ -79,6 +79,8 @@ func TestRequestValidtion(t *testing.T) {
 			configs: map[string]*postgres.TaxConfig{
 				"PERSONAL_DEDUCTION": {
 					Value: 60_000,
+				}, "MAX_K_RECEIPT_DEDUCTION": {
+					Value: 50_000,
 				},
 			},
 		})
@@ -136,6 +138,9 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 					configs: map[string]*postgres.TaxConfig{
 						"PERSONAL_DEDUCTION": {
 							Value: 60_000,
+						},
+						"MAX_K_RECEIPT_DEDUCTION": {
+							Value: 50_000,
 						},
 					},
 				})
@@ -198,6 +203,9 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 					configs: map[string]*postgres.TaxConfig{
 						"PERSONAL_DEDUCTION": {
 							Value: 60_000,
+						},
+						"MAX_K_RECEIPT_DEDUCTION": {
+							Value: 50_000,
 						},
 					},
 				})
@@ -270,6 +278,9 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 					configs: map[string]*postgres.TaxConfig{
 						"PERSONAL_DEDUCTION": {
 							Value: 60_000,
+						},
+						"MAX_K_RECEIPT_DEDUCTION": {
+							Value: 50_000,
 						},
 					},
 				})

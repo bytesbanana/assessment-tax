@@ -136,6 +136,9 @@ func TestTaxFileUpdaloadCalculation(t *testing.T) {
 			"PERSONAL_DEDUCTION": {
 				Value: 60_000,
 			},
+			"MAX_K_RECEIPT_DEDUCTION": {
+				Value: 50_000,
+			},
 		},
 	})
 	h.CalculateTaxFromTaxFile(c)

@@ -10,16 +10,17 @@ const (
 	MAX_TAX_LEVEL_1_AMOUNT = 35_000
 	MAX_TAX_LEVEL_2_AMOUNT = 75_000
 	MAX_TAX_LEVEL_3_AMOUNT = 200_000
-	MAX_K_RECEIPT          = 50000
 )
 
 type TaxCalculator struct {
 	personalDededucation float64
+	maxKRecieptDeduction float64
 }
 
-func NewTaxCalculator(personalDededucation float64) TaxCalculator {
+func NewTaxCalculator(personalDeductation, maxKRecieptDeduction float64) TaxCalculator {
 	return TaxCalculator{
-		personalDededucation: personalDededucation,
+		personalDededucation: personalDeductation,
+		maxKRecieptDeduction: maxKRecieptDeduction,
 	}
 }
 
@@ -108,7 +109,7 @@ func (t TaxCalculator) calDeductedIncome(info TaxInformation) float64 {
 		}
 	}
 
-	return baseDeduction - sumDonation - math.Min(sumKReceipt, MAX_K_RECEIPT)
+	return baseDeduction - sumDonation - math.Min(sumKReceipt, t.maxKRecieptDeduction)
 }
 
 func (t TaxCalculator) calTaxRefund(tax float64, wht float64) float64 {

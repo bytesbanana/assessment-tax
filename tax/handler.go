@@ -54,17 +54,24 @@ type (
 
 func New(db Storer) *Handler {
 
-	personalDededucationConfig, err := db.GetTaxConfig("PERSONAL_DEDUCTION")
-	if err != nil {
-		return &Handler{
-			taxCalculator: NewTaxCalculator(60_000),
-			storer:        db,
-		}
+	personalDeducation := 60_000.0
+	maxKRecieptDeduction := 50_000.0
+
+	personalDeducationConfig, err := db.GetTaxConfig("PERSONAL_DEDUCTION")
+	if err == nil {
+		personalDeducation = personalDeducationConfig.Value
+	}
+	maxKRecieptDeductionConfig, err := db.GetTaxConfig("MAX_K_RECEIPT_DEDUCTION")
+	if err == nil {
+		maxKRecieptDeduction = maxKRecieptDeductionConfig.Value
 	}
 
 	return &Handler{
-		taxCalculator: NewTaxCalculator(personalDededucationConfig.Value),
-		storer:        db,
+		taxCalculator: NewTaxCalculator(
+			personalDeducation,
+			maxKRecieptDeduction,
+		),
+		storer: db,
 	}
 }
 
