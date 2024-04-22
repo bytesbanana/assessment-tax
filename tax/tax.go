@@ -98,19 +98,23 @@ func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
 func (t TaxCalculator) calDeductedIncome(info TaxInformation) float64 {
 	baseDeduction := info.TotalIncome - t.personalDededucation
 
-	sumKReceipt := 0.0
-	sumDonation := 0.0
-	for _, allowance := range info.Allowances {
-		if allowance.AllowanceType == "k-receipt" {
-			sumKReceipt += allowance.Amount
-		}
+	kReceiptSum := sumAllowanceByType(info.Allowances, ACCEPT_ALLOWANCE_TYPES["k-receipt"])
+	donationSum := sumAllowanceByType(info.Allowances, ACCEPT_ALLOWANCE_TYPES["donation"])
 
-		if allowance.AllowanceType == "donation" {
-			sumDonation += allowance.Amount
+	donationDeduction := math.Min(donationSum, MAX_DONATE_DEDUCTION)
+	kRecieptDeduction := math.Min(kReceiptSum, t.maxKReceiptDeduction)
+
+	return baseDeduction - donationDeduction - kRecieptDeduction
+}
+
+func sumAllowanceByType(allowances []Allowance, allowanceType string) float64 {
+	kReceiptSum := 0.0
+	for _, allowance := range allowances {
+		if allowance.AllowanceType == allowanceType {
+			kReceiptSum += allowance.Amount
 		}
 	}
-
-	return baseDeduction - math.Min(sumDonation, MAX_DONATE_DEDUCTION) - math.Min(sumKReceipt, t.maxKReceiptDeduction)
+	return kReceiptSum
 }
 
 func (t TaxCalculator) calTaxRefund(tax float64, wht float64) float64 {
