@@ -158,7 +158,10 @@ func TestTaxFileUpdaloadCalculation(t *testing.T) {
 		Taxes []TaxCalculationResponse `json:"taxes"`
 	}
 
-	json.Unmarshal(rec.Body.Bytes(), &res)
+	err = json.Unmarshal(rec.Body.Bytes(), &res)
+	if err != nil {
+		t.Errorf("unable to unmarshal response: %v", err)
+	}
 
 	log.Println(rec.Body.String())
 	if !reflect.DeepEqual(res, expectedResult) {
