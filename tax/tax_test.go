@@ -84,7 +84,10 @@ func TestRequestValidtion(t *testing.T) {
 				},
 			},
 		})
-		h.CalculateTax(c)
+		err := h.CalculateTax(c)
+		if err != nil {
+			t.Errorf("unable to calculate tax: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -108,7 +111,10 @@ func TestRequestValidtion(t *testing.T) {
 		})
 
 		h := &Handler{}
-		h.CalculateTax(c)
+		err := h.CalculateTax(c)
+		if err != nil {
+			t.Errorf("unable to calculate tax: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -145,7 +151,10 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 					},
 				})
 
-				h.CalculateTax(c)
+				err := h.CalculateTax(c)
+				if err != nil {
+					t.Errorf("unable to calculate tax: %v", err)
+				}
 
 				if rec.Code != http.StatusOK {
 					t.Errorf("invalid status code: got %v want %v",
@@ -153,7 +162,10 @@ func TestTotalIncomeTaxCalculation(t *testing.T) {
 				}
 
 				res := &TaxCalculationResponse{}
-				json.Unmarshal(rec.Body.Bytes(), res)
+				err = json.Unmarshal(rec.Body.Bytes(), res)
+				if err != nil {
+					t.Errorf("unable to unmarshal response: %v", err)
+				}
 
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
@@ -209,7 +221,10 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 						},
 					},
 				})
-				h.CalculateTax(c)
+				err := h.CalculateTax(c)
+				if err != nil {
+					t.Errorf("unable to calculate tax: %v", err)
+				}
 
 				if rec.Code != http.StatusOK {
 					t.Errorf("invalid status code: got %v want %v",
@@ -217,7 +232,10 @@ func TestTotalIncomeWHTTaxCalculation(t *testing.T) {
 				}
 
 				res := &TaxCalculationResponse{}
-				json.Unmarshal(rec.Body.Bytes(), res)
+				err = json.Unmarshal(rec.Body.Bytes(), res)
+				if err != nil {
+					t.Errorf("unable to unmarshal response: %v", err)
+				}
 
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",
@@ -284,7 +302,10 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 						},
 					},
 				})
-				h.CalculateTax(c)
+				err := h.CalculateTax(c)
+				if err != nil {
+					t.Errorf("unable to calculate tax: %v", err)
+				}
 
 				if rec.Code != http.StatusOK {
 					t.Errorf("invalid status code: got %v want %v",
@@ -292,7 +313,10 @@ func TestTotalIncomeWithAllowancesTaxCalculation(t *testing.T) {
 				}
 
 				res := &TaxCalculationResponse{}
-				json.Unmarshal(rec.Body.Bytes(), res)
+				err = json.Unmarshal(rec.Body.Bytes(), res)
+				if err != nil {
+					t.Errorf("unable to unmarshal response: %v", err)
+				}
 
 				if res.Tax != tc.ExpectedTax {
 					t.Errorf("invalid tax: got %v want %v",

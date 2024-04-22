@@ -37,7 +37,10 @@ func TestPersonalDeduction(t *testing.T) {
 			Configs: map[string]*postgres.TaxConfig{},
 		})
 
-		handler.SetPersonalDeductionsConfig(c)
+		err := handler.SetPersonalDeductionsConfig(c)
+		if err != nil {
+			t.Errorf("unable to set personal deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -66,7 +69,10 @@ func TestPersonalDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetPersonalDeductionsConfig(c)
+		err := handler.SetPersonalDeductionsConfig(c)
+		if err != nil {
+			t.Errorf("unable to set personal deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("invalid http status: got %v want %v",
@@ -100,7 +106,10 @@ func TestPersonalDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetPersonalDeductionsConfig(c)
+		err := handler.SetPersonalDeductionsConfig(c)
+		if err != nil {
+			t.Errorf("unable to set personal deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -129,7 +138,10 @@ func TestPersonalDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetPersonalDeductionsConfig(c)
+		err := handler.SetPersonalDeductionsConfig(c)
+		if err != nil {
+			t.Errorf("unable to set personal deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -152,7 +164,10 @@ func TestMaxKReceiptDeduction(t *testing.T) {
 			Configs: map[string]*postgres.TaxConfig{},
 		})
 
-		handler.SetMaxKReceiptDeduction(c)
+		err := handler.SetMaxKReceiptDeduction(c)
+		if err != nil {
+			t.Errorf("unable to set max k-receipt deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -181,7 +196,10 @@ func TestMaxKReceiptDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetMaxKReceiptDeduction(c)
+		err := handler.SetMaxKReceiptDeduction(c)
+		if err != nil {
+			t.Errorf("unable to set max k-receipt deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusOK {
 			t.Errorf("invalid http status: got %v want %v",
@@ -215,7 +233,10 @@ func TestMaxKReceiptDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetMaxKReceiptDeduction(c)
+		err := handler.SetMaxKReceiptDeduction(c)
+		if err != nil {
+			t.Errorf("unable to set max k-receipt deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
@@ -244,7 +265,10 @@ func TestMaxKReceiptDeduction(t *testing.T) {
 		}
 		handler := New(stubAdminHandler)
 
-		handler.SetMaxKReceiptDeduction(c)
+		err := handler.SetMaxKReceiptDeduction(c)
+		if err != nil {
+			t.Errorf("unable to set max k-receipt deduction: %v", err)
+		}
 
 		if rec.Code != http.StatusBadRequest {
 			t.Errorf("invalid http status: got %v want %v",
