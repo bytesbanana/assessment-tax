@@ -21,12 +21,6 @@ type (
 		Amount        float64 `json:"amount"`
 	}
 
-	TaxInformation struct {
-		TotalIncome float64     `json:"totalIncome"`
-		WHT         float64     `json:"wht"`
-		Allowances  []Allowance `json:"allowances"`
-	}
-
 	TaxLevel struct {
 		Level string  `json:"level"`
 		Tax   float64 `json:"tax"`
