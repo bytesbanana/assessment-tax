@@ -1,0 +1,31 @@
+name: Go CI
+
+on:
+    push: 
+        branches: [main]
+    pull_request:
+
+
+jobs:
+    # Create job to run tests and linting
+    go-ci:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout codebase
+              uses: actions/checkout@v2
+
+            - name: Set up Go
+              uses: actions/setup-go@v2
+              with:
+                go-version: 1.22.1
+            - name: Static code analysis
+              run: go vet -v -race
+            - name: Linting
+              uses: golangci/golangci-lint-action@v4
+              with:
+                version: v1.54
+            - name: Run tests
+              run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+            - name: Build docker image
+              if: github.ref == 'refs/heads/main'
+              run: docker build -t ghcr.io/$GITHUB_REPOSITORY/assessment-tax:${GITHUB_SHA::8} .
