@@ -117,7 +117,10 @@ func TestTaxFileUpdaloadCalculation(t *testing.T) {
 
 	defer f.Close()
 
-	io.Copy(part, f)
+	w, err := io.Copy(part, f)
+	if err != nil || w == 0 {
+		t.Fatal("failed to copy file", err)
+	}
 
 	t.Logf("body: %v", body.String())
 
@@ -141,7 +144,10 @@ func TestTaxFileUpdaloadCalculation(t *testing.T) {
 			},
 		},
 	})
-	h.CalculateTaxFromTaxFile(c)
+	err = h.CalculateTaxFromTaxFile(c)
+	if err != nil {
+		t.Errorf("unable to calculate tax from file: %v", err)
+	}
 
 	if rec.Code != http.StatusOK {
 		t.Errorf("invalid http status: got %v want %v",
@@ -152,7 +158,10 @@ func TestTaxFileUpdaloadCalculation(t *testing.T) {
 		Taxes []TaxCalculationResponse `json:"taxes"`
 	}
 
-	json.Unmarshal(rec.Body.Bytes(), &res)
+	err = json.Unmarshal(rec.Body.Bytes(), &res)
+	if err != nil {
+		t.Errorf("unable to unmarshal response: %v", err)
+	}
 
 	log.Println(rec.Body.String())
 	if !reflect.DeepEqual(res, expectedResult) {
