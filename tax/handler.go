@@ -37,8 +37,7 @@ type (
 	}
 
 	Handler struct {
-		taxCalculator TaxCalculator
-		storer        Storer
+		storer Storer
 	}
 
 	Err struct {
@@ -48,23 +47,7 @@ type (
 
 func New(db Storer) *Handler {
 
-	personalDeducation := 60_000.0
-	maxKReceiptDeduction := 50_000.0
-
-	personalDeducationConfig, err := db.GetTaxConfig("PERSONAL_DEDUCTION")
-	if err == nil {
-		personalDeducation = personalDeducationConfig.Value
-	}
-	maxKReceiptDeductionConfig, err := db.GetTaxConfig("MAX_K_RECEIPT_DEDUCTION")
-	if err == nil {
-		maxKReceiptDeduction = maxKReceiptDeductionConfig.Value
-	}
-
 	return &Handler{
-		taxCalculator: NewTaxCalculator(
-			personalDeducation,
-			maxKReceiptDeduction,
-		),
 		storer: db,
 	}
 }
@@ -95,13 +78,28 @@ func (h *Handler) CalculateTax(c echo.Context) error {
 		})
 	}
 
-	taxDetails := h.taxCalculator.calculate(req)
+	personalDeducation := h.getConfigValue("PERSONAL_DEDUCTION", 60_000)
+	maxKReceiptDeduction := h.getConfigValue("MAX_K_RECEIPT_DEDUCTION", 50_000)
+	taxCalculator := NewTaxCalculator(personalDeducation, maxKReceiptDeduction)
+
+	taxDetails := taxCalculator.calculate(req)
 
 	return c.JSON(http.StatusOK, TaxCalculationResponse{
 		Tax:       taxDetails.tax,
 		TaxRefund: taxDetails.taxRefund,
 		TaxLevel:  taxDetails.taxLevel,
 	})
+}
+
+func (h *Handler) getConfigValue(configName string, defaultValue float64) float64 {
+	result := defaultValue
+
+	config, err := h.storer.GetTaxConfig(configName)
+	if err == nil {
+		result = config.Value
+	}
+
+	return result
 }
 
 func (h *Handler) CalculateTaxFromTaxFile(c echo.Context) error {
@@ -129,6 +127,10 @@ func (h *Handler) CalculateTaxFromTaxFile(c echo.Context) error {
 		})
 	}
 	headers := records[0]
+
+	personalDeducation := h.getConfigValue("PERSONAL_DEDUCTION", 60_000)
+	maxKReceiptDeduction := h.getConfigValue("MAX_K_RECEIPT_DEDUCTION", 50_000)
+	taxCalculator := NewTaxCalculator(personalDeducation, maxKReceiptDeduction)
 
 	taxDetails := []CalculateTaxDetails{}
 
@@ -158,7 +160,7 @@ func (h *Handler) CalculateTaxFromTaxFile(c echo.Context) error {
 			}
 		}
 
-		taxDetails = append(taxDetails, h.taxCalculator.calculate(taxInfo))
+		taxDetails = append(taxDetails, taxCalculator.calculate(taxInfo))
 	}
 
 	taxes := []TaxCalculationResponse{}
