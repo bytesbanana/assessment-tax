@@ -2,6 +2,38 @@ package tax
 
 import "math"
 
+var progressiveTax = []struct {
+	minIncome float64
+	maxIncome float64
+	rate      float64
+}{
+	{
+		minIncome: 0,
+		maxIncome: 150_000.0,
+		rate:      0.0,
+	},
+	{
+		minIncome: 150_000.0,
+		maxIncome: 500_000.0,
+		rate:      0.1,
+	},
+	{
+		minIncome: 500_000,
+		maxIncome: 1_000_000.0,
+		rate:      0.15,
+	},
+	{
+		minIncome: 1_000_000.0,
+		maxIncome: 2_000_000.0,
+		rate:      0.20,
+	},
+	{
+		minIncome: 2_000_000,
+		maxIncome: math.MaxFloat64,
+		rate:      0.35,
+	},
+}
+
 const (
 	MAX_TAX_LEVEL_0        = 150_000.0
 	MAX_TAX_LEVEL_1        = 500_000.0
@@ -65,28 +97,13 @@ func (t TaxCalculator) calculate(info TaxInformation) CalculateTaxDetails {
 
 	details := NewTaxDetails()
 
-	if income > MAX_TAX_LEVEL_0 {
-		tax := math.Min((income-MAX_TAX_LEVEL_0)*0.1, MAX_TAX_LEVEL_1_AMOUNT)
-		details.tax += tax
-		details.taxLevel[1].Tax = tax
-	}
-
-	if income > MAX_TAX_LEVEL_1 {
-		tax := math.Min((income-MAX_TAX_LEVEL_1)*0.15, MAX_TAX_LEVEL_2_AMOUNT)
-		details.tax += tax
-		details.taxLevel[2].Tax = tax
-	}
-
-	if income > MAX_TAX_LEVEL_2 {
-		tax := math.Min((income-MAX_TAX_LEVEL_2)*0.2, MAX_TAX_LEVEL_3_AMOUNT)
-		details.tax += tax
-		details.taxLevel[3].Tax = tax
-	}
-
-	if income > MAX_TAX_LEVEL_3 {
-		tax := (income - MAX_TAX_LEVEL_3) * 0.35
-		details.tax += tax
-		details.taxLevel[4].Tax = tax
+	for level, proTax := range progressiveTax {
+		if income > proTax.minIncome {
+			max := (proTax.maxIncome - proTax.minIncome) * proTax.rate
+			tax := math.Min((income-proTax.minIncome)*proTax.rate, max)
+			details.tax += tax
+			details.taxLevel[level].Tax = tax
+		}
 	}
 
 	details.taxRefund = t.calTaxRefund(details.tax, info.WHT)
